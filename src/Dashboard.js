@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
 const Dashboard = () => {
-  const [asistencias, setAsistencias] = useState([
+  const [asistencias] = useState([
     {
       idClase: 'CL001', nombreUsuario: 'Juan Pérez', identificacion: '123456789', rol: 'Estudiante',
       estudiante: 'Juan Pérez', fecha: '2025-05-08', día: 'Lunes', hora: '08:00',
