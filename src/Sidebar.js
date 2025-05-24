@@ -5,10 +5,9 @@ import {
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
-import GroupIcon from '@mui/icons-material/Group';
 import InsertChartIcon from '@mui/icons-material/InsertChart';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
+import { Link } from 'react-router-dom'; // 👈 Importante
 
 const Sidebar = () => {
   return (
@@ -26,39 +25,24 @@ const Sidebar = () => {
           Módulo de Asistencia
         </Typography>
 
-        <ListItem button>
+        <ListItem button component={Link} to="/registro">
           <ListItemIcon sx={{ color: 'black' }}><EventAvailableIcon /></ListItemIcon>
-          <ListItemText primary="Registrar Asistencia" sx={{ color: 'black' }} />
+          <ListItemText primary="Registro de Asistencias" sx={{ color: 'black' }} />
         </ListItem>
 
-        <ListItem button>
-          <ListItemIcon sx={{ color: 'black' }}><GroupIcon /></ListItemIcon>
-          <ListItemText primary="Asistencia por Grupo" sx={{ color: 'black' }} />
-        </ListItem>
-
-        <ListItem button>
-          <ListItemIcon sx={{ color: 'black' }}><PersonSearchIcon /></ListItemIcon>
-          <ListItemText primary="Consultar Mi Asistencia" sx={{ color: 'black' }} />
-        </ListItem>
-
-        <ListItem button>
+        <ListItem button component={Link} to="/registro">
           <ListItemIcon sx={{ color: 'black' }}><AssignmentIcon /></ListItemIcon>
-          <ListItemText primary="Detalle de Clases" sx={{ color: 'black' }} />
+          <ListItemText primary="Registro de Clases" sx={{ color: 'black' }} />
         </ListItem>
 
-        <ListItem button>
+        <ListItem button component={Link} to="/reportes">
           <ListItemIcon sx={{ color: 'black' }}><InsertChartIcon /></ListItemIcon>
           <ListItemText primary="Reportes y Seguimiento" sx={{ color: 'black' }} />
         </ListItem>
 
-        <ListItem button>
+        <ListItem button component={Link} to="/notificaciones">
           <ListItemIcon sx={{ color: 'black' }}><NotificationsActiveIcon /></ListItemIcon>
           <ListItemText primary="Notificaciones" sx={{ color: 'black' }} />
-        </ListItem>
-
-        <ListItem button>
-          <ListItemIcon sx={{ color: 'black' }}><IntegrationInstructionsIcon /></ListItemIcon>
-          <ListItemText primary="Integración con Bienestar" sx={{ color: 'black' }} />
         </ListItem>
       </List>
 
@@ -69,16 +53,15 @@ const Sidebar = () => {
           General
         </Typography>
 
-        <ListItem button>
+        <ListItem button component={Link} to="/">
           <ListItemIcon sx={{ color: 'black' }}><AssignmentIcon /></ListItemIcon>
           <ListItemText primary="Dashboard" sx={{ color: 'black' }} />
         </ListItem>
 
-        <ListItem button>
+        <ListItem button component={Link} to="/login">
           <ListItemIcon sx={{ color: 'black' }}><PersonSearchIcon /></ListItemIcon>
           <ListItemText primary="Login" sx={{ color: 'black' }} />
         </ListItem>
-
       </List>
     </Drawer>
   );

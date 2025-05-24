@@ -1,62 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box, Grid, Paper, Typography, Table, TableBody, TableCell,
-  TableHead, TableRow, Accordion, AccordionSummary, AccordionDetails, Chip, IconButton, Badge
+  TableHead, TableRow, Accordion, AccordionSummary, AccordionDetails, IconButton, Badge
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import axios from 'axios';
 
 const Dashboard = () => {
-  const [asistencias] = useState([
-    {
-      idClase: 'CL001', nombreUsuario: 'Juan Pérez', identificacion: '123456789', rol: 'Estudiante',
-      estudiante: 'Juan Pérez', fecha: '2025-05-08', día: 'Lunes', hora: '08:00',
-      clase: 'Matemáticas', confirmada: true, tipo: 'Académica'
-    },
-    {
-      idClase: 'CL002', nombreUsuario: 'Juan Pérez', identificacion: '123456789', rol: 'Estudiante',
-      estudiante: 'Juan Pérez', fecha: '2025-05-08', día: 'Miércoles', hora: '08:00',
-      clase: 'Física', confirmada: true, tipo: 'Deportiva'
-    },
-    {
-      idClase: 'CL003', nombreUsuario: 'Juan Pérez', identificacion: '123456789', rol: 'Estudiante',
-      estudiante: 'Juan Pérez', fecha: '2025-05-08', día: 'Lunes', hora: '12:00',
-      clase: 'Programación', confirmada: true, tipo: 'Cultural'
-    },
-    {
-      idClase: 'CL004', nombreUsuario: 'Juan Pérez', identificacion: '123456789', rol: 'Estudiante',
-      estudiante: 'Juan Pérez', fecha: '2025-05-08', día: 'Martes', hora: '10:00',
-      clase: 'Historia', confirmada: true, tipo: 'Artística'
-    },
-    {
-      idClase: 'CL005', nombreUsuario: 'Juan Pérez', identificacion: '123456789', rol: 'Estudiante',
-      estudiante: 'Juan Pérez', fecha: '2025-05-08', día: 'Jueves', hora: '12:00',
-      clase: 'Física', confirmada: false, tipo: 'Relajación'
-    },
-    {
-      idClase: 'CL006', nombreUsuario: 'Juan Pérez', identificacion: '123456789', rol: 'Estudiante',
-      estudiante: 'Juan Pérez', fecha: '2025-05-08', día: 'Viernes', hora: '08:00',
-      clase: 'Algoritmos', confirmada: false, tipo: 'Deportiva'
-    }
-  ]);
+  const [clases, setClases] = useState([]);
 
   const Bienvenido = () => (
     <Box display="flex" alignItems="center" justifyContent="space-between" mb={4}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#910000', textAlign: 'left' }}>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#910000' }}>
         Bienvenido Pepito Pérez
       </Typography>
-      <IconButton
-        sx={{
-          backgroundColor: '#910000',
-          borderRadius: '50%',
-          '& .MuiSvgIcon-root': {
-            color: 'white',
-          },
-          '&:hover .MuiSvgIcon-root': {
-            color: '#910000',
-          },
-        }}
-      >
+      <IconButton sx={{
+        backgroundColor: '#910000',
+        borderRadius: '50%',
+        '& .MuiSvgIcon-root': { color: 'white' },
+        '&:hover .MuiSvgIcon-root': { color: '#910000' },
+      }}>
         <Badge badgeContent={0} color="error">
           <NotificationsIcon />
         </Badge>
@@ -67,18 +31,38 @@ const Dashboard = () => {
   const [horario, setHorario] = useState([]);
 
   useEffect(() => {
+    const fetchClases = async () => {
+      try {
+        const response = await axios.get('https://registroclases-h0f5bjdgevhhcgh0.canadacentral-01.azurewebsites.net');
+        setClases(response.data);
+      } catch (error) {
+        console.error('Error al obtener clases:', error);
+      }
+    };
+    fetchClases();
+  }, []);
+
+  useEffect(() => {
     const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-    const horasUnicas = [...new Set(asistencias.map(a => a.hora))].sort();
-    const horarioGenerado = horasUnicas.map(hora => {
+    const horas = [...new Set(clases.map(c => c.timeSlot?.split(' - ')[0]))].sort();
+
+    const horarioGenerado = horas.map(hora => {
       const fila = { hora };
       dias.forEach(dia => {
-        const clase = asistencias.find(a => a.confirmada && a.hora === hora && a.día === dia);
-        fila[dia.toLowerCase()] = clase ? clase.clase : '';
+        const clase = clases.find(c => {
+          if (!c.classDateTime) return false;
+          const dt = new Date(c.classDateTime);
+          const horaClase = dt.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: false });
+          const diaClase = dt.toLocaleDateString('es-ES', { weekday: 'long' });
+          return horaClase === hora && diaClase.toLowerCase() === dia.toLowerCase();
+        });
+        fila[dia.toLowerCase()] = clase ? clase.name : '';
       });
       return fila;
     });
+
     setHorario(horarioGenerado);
-  }, [asistencias]);
+  }, [clases]);
 
   const headerStyle = {
     backgroundColor: '#910000',
@@ -96,9 +80,10 @@ const Dashboard = () => {
   return (
     <Box p={3} sx={{ width: '90%' }}>
       <Bienvenido />
+
       <Grid container spacing={3} direction="column">
         <Grid item>
-          <Paper elevation={4} sx={{ p: 3, borderRadius: 3, width: '100%' }}>
+          <Paper elevation={4} sx={{ p: 3, borderRadius: 3 }}>
             <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#910000' }}>
               Horario de Clases
             </Typography>
@@ -106,11 +91,11 @@ const Dashboard = () => {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ ...headerStyle, textAlign: 'center' }}>Hora</TableCell>
-                  <TableCell sx={{ ...headerStyle, textAlign: 'center' }}>Lunes</TableCell>
-                  <TableCell sx={{ ...headerStyle, textAlign: 'center' }}>Martes</TableCell>
-                  <TableCell sx={{ ...headerStyle, textAlign: 'center' }}>Miércoles</TableCell>
-                  <TableCell sx={{ ...headerStyle, textAlign: 'center' }}>Jueves</TableCell>
-                  <TableCell sx={{ ...headerStyle, textAlign: 'center' }}>Viernes</TableCell>
+                  <TableCell sx={headerStyle}>Lunes</TableCell>
+                  <TableCell sx={headerStyle}>Martes</TableCell>
+                  <TableCell sx={headerStyle}>Miércoles</TableCell>
+                  <TableCell sx={headerStyle}>Jueves</TableCell>
+                  <TableCell sx={headerStyle}>Viernes</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -130,36 +115,24 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item>
-          <Paper elevation={4} sx={{ p: 3, borderRadius: 3, width: '100%' }}>
+          <Paper elevation={4} sx={{ p: 3, borderRadius: 3 }}>
             <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#910000' }}>
-              Asistencia
+              Detalle de Clases
             </Typography>
-            {asistencias.map((item, idx) => (
-              <Accordion key={idx} sx={{ backgroundColor: item.confirmada ? '#e8f5e9' : '#ffebee', mb: 1 }}>
+            {clases.map((clase, idx) => (
+              <Accordion key={idx} sx={{ mb: 1 }}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography>
-                    <strong>{item.clase}</strong> - {item.día} - {item.hora}
-                  </Typography>
+                  <Typography><strong>{clase.name}</strong> - {clase.timeSlot}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                  <Typography><strong>ID Clase:</strong> {item.idClase}</Typography>
-                  <Typography><strong>Usuario:</strong> {item.nombreUsuario}</Typography>
-                  <Typography><strong>Identificación:</strong> {item.identificacion}</Typography>
-                  <Typography><strong>Rol:</strong> {item.rol}</Typography>
-                  <Typography><strong>Estudiante:</strong> {item.estudiante}</Typography>
-                  <Typography><strong>Fecha:</strong> {item.fecha}</Typography>
-                  <Typography><strong>Día:</strong> {item.día}</Typography>
-                  <Typography><strong>Hora:</strong> {item.hora}</Typography>
-                  <Typography><strong>Tipo de Actividad:</strong> {item.tipo}</Typography>
-                  <Typography>
-                    <strong>Asistencia:</strong>{' '}
-                    <Chip
-                      label={item.confirmada ? 'Sí' : 'No'}
-                      color={item.confirmada ? 'success' : 'error'}
-                      size="small"
-                      sx={{ ml: 1 }}
-                    />
-                  </Typography>
+                  <Typography><strong>Tipo:</strong> {clase.type}</Typography>
+                  <Typography><strong>Fecha:</strong> {clase.date}</Typography>
+                  <Typography><strong>Franja horaria:</strong> {clase.timeSlot}</Typography>
+                  <Typography><strong>Capacidad máxima:</strong> {clase.maxCapacity}</Typography>
+                  <Typography><strong>Asistencia actual:</strong> {clase.currentAttendance}</Typography>
+                  <Typography><strong>Ubicación:</strong> {clase.location}</Typography>
+                  <Typography><strong>Recursos:</strong> {clase.resources?.join(', ')}</Typography>
+                  <Typography><strong>classDateTime:</strong> {new Date(clase.classDateTime).toLocaleString()}</Typography>
                 </AccordionDetails>
               </Accordion>
             ))}
