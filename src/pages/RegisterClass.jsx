@@ -6,18 +6,15 @@ import {
 } from '@mui/material';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://registroclases-h0f5bjdgevhhcgh0.canadacentral-01.azurewebsites.net'
+  baseURL: process.env.REACT_APP_API_URL || 'https://registroclases-h0f5bjdgevhhcgh0.canadacentral-01.azurewebsites.net',
 });
 
 const RegisterClass = () => {
   const [idClase, setIdClase] = useState('');
-  const [clases, setClases] = useState([]);             // Clases en las que estoy inscrito
-  const [ultimaClase, setUltimaClase] = useState(null); // Clase seleccionada para confirmar asistencia
+  const [clases, setClases] = useState([]);
+  const [ultimaClase, setUltimaClase] = useState(null);
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
-
-  // Al montar, opcionalmente podrías cargar las clases disponibles
-  // api.get('/classes').then(r => setDisponibles(r.data))
 
   const inputStyle = {
     '& label.Mui-focused': { color: '#910000' },
@@ -28,27 +25,39 @@ const RegisterClass = () => {
     }
   };
 
+  // Obtener inscripciones del usuario
+  const fetchInscripciones = async () => {
+    if (!userId) return alert('Ingresa un ID de usuario para buscar inscripciones');
+    try {
+      const res = await api.get('/enrollments', { params: { userId } });
+      setClases(res.data);
+    } catch (e) {
+      console.error(e);
+      alert('Error al obtener clases inscritas');
+    }
+  };
+
   // Inscribirme a la clase (Enrollment)
   const handleAdd = async () => {
     if (!idClase || !userId || !userEmail) {
       return alert('Debes ingresar ID de clase, usuario y correo');
     }
     try {
-      const resp = await api.post(`/enrollments`, null, {
+      const resp = await api.post('/enrollments', null, {
         params: { classId: idClase, userId, userEmail }
       });
       const nueva = resp.data;
-      setClases([...clases, nueva]);
       setUltimaClase(nueva);
       setIdClase('');
       alert(`Inscripción exitosa a la clase ${nueva.classId}`);
+      fetchInscripciones(); // actualizar tabla
     } catch (e) {
       console.error(e);
-      alert('Error al inscribirse: ' + e.response?.data?.message || e.message);
+      alert('Error al inscribirse: ' + (e.response?.data?.message || e.message));
     }
   };
 
-  // Eliminar inscripción (solo local, no hay DELETE en el API)
+  // Eliminar inscripción (solo local)
   const handleDelete = () => {
     setClases(clases.filter(c => c.classId !== idClase));
     if (ultimaClase?.classId === idClase) {
@@ -59,7 +68,7 @@ const RegisterClass = () => {
     setIdClase('');
   };
 
-  // Confirmar asistencia (Attendance)
+  // Confirmar asistencia
   const handleConfirmarAsistencia = async () => {
     if (!ultimaClase) return;
     try {
@@ -76,7 +85,6 @@ const RegisterClass = () => {
     }
   };
 
-  // Eliminar asistencia (solo local, no hay DELETE en el API)
   const handleEliminarAsistencia = () => {
     alert(`Asistencia eliminada de ${ultimaClase.classId}`);
     setUserId('');
@@ -121,10 +129,6 @@ const RegisterClass = () => {
               onClick={handleAdd}>
               Inscribir Clase
             </Button>
-            <Button variant="outlined" fullWidth sx={{ borderColor: '#910000', color: '#910000', mt: 1 }}
-              onClick={handleDelete}>
-              Eliminar Inscripción
-            </Button>
           </Paper>
         </Grid>
 
@@ -147,11 +151,11 @@ const RegisterClass = () => {
           </Grid>
         )}
 
-        {/* Tabla de inscripciones locales */}
+        {/* Tabla de inscripciones reales */}
         <Grid item xs={12}>
           <Paper elevation={4} sx={estiloPaper}>
             <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#910000' }}>
-              Mis Inscripciones
+              Clases Inscritas
             </Typography>
             <Table>
               <TableHead>

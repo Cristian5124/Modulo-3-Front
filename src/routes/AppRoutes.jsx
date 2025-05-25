@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Box, Toolbar } from '@mui/material';
 
 import Sidebar from '../components/Sidebar';
-import Topbar from '../components/Topbar';
+import Navbar from '../components/Navbar';
 import Dashboard from '../pages/Dashboard';
 import RegisterClass from '../pages/RegisterClass';
 
@@ -12,7 +12,7 @@ const AppRoutes = () => {
   return (
     <Router>
       <Box sx={{ display: 'flex' }}>
-        <Topbar />
+        <Navbar />
         <Sidebar />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Toolbar />
