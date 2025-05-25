@@ -1,54 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Box, Paper, Typography, TextField, Button, Grid, Table, TableBody,
   TableCell, TableHead, TableRow
 } from '@mui/material';
 
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || 'https://registroclases-h0f5bjdgevhhcgh0.canadacentral-01.azurewebsites.net'
+});
+
 const RegisterClass = () => {
   const [idClase, setIdClase] = useState('');
-  const [clases, setClases] = useState([]);
-  const [ultimaClase, setUltimaClase] = useState(null);
+  const [clases, setClases] = useState([]);             // Clases en las que estoy inscrito
+  const [ultimaClase, setUltimaClase] = useState(null); // Clase seleccionada para confirmar asistencia
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
-  const clasesDisponibles = {
-    1: {
-      _id: '1',
-      name: 'Programación',
-      type: 'Tecnología',
-      date: '2025-05-19',
-      timeSlot: '08:00 - 10:00',
-      maxCapacity: 30,
-      currentAttendance: 10,
-      resources: ['Proyector', 'Pizarra'],
-      location: 'Sala 101',
-      classDateTime: '2025-05-19T08:00:00'
-    },
-    2: {
-      _id: '2',
-      name: 'Física',
-      type: 'Ciencia',
-      date: '2025-05-20',
-      timeSlot: '10:00 - 12:00',
-      maxCapacity: 25,
-      currentAttendance: 0,
-      resources: ['Laboratorio'],
-      location: 'Sala 102',
-      classDateTime: '2025-05-20T10:00:00'
-    },
-    3: {
-      _id: '3',
-      name: 'Matemáticas',
-      type: 'Ciencia',
-      date: '2025-05-21',
-      timeSlot: '08:00 - 10:00',
-      maxCapacity: 20,
-      currentAttendance: 20,
-      resources: ['Pizarra'],
-      location: 'Sala 103',
-      classDateTime: '2025-05-21T08:00:00'
-    }
-  };
+  // Al montar, opcionalmente podrías cargar las clases disponibles
+  // api.get('/classes').then(r => setDisponibles(r.data))
 
   const inputStyle = {
     '& label.Mui-focused': { color: '#910000' },
@@ -59,51 +28,57 @@ const RegisterClass = () => {
     }
   };
 
-  const handleAdd = () => {
-    const nuevaClase = clasesDisponibles[idClase];
-    if (nuevaClase) {
-      if (clases.find(c => c._id === nuevaClase._id)) {
-        alert('Ya estás registrado en esta clase.');
-        return;
-      }
-      setClases([...clases, nuevaClase]);
-      setUltimaClase(nuevaClase);
+  // Inscribirme a la clase (Enrollment)
+  const handleAdd = async () => {
+    if (!idClase || !userId || !userEmail) {
+      return alert('Debes ingresar ID de clase, usuario y correo');
+    }
+    try {
+      const resp = await api.post(`/enrollments`, null, {
+        params: { classId: idClase, userId, userEmail }
+      });
+      const nueva = resp.data;
+      setClases([...clases, nueva]);
+      setUltimaClase(nueva);
       setIdClase('');
-    } else {
-      alert('ID de clase no encontrado.');
+      alert(`Inscripción exitosa a la clase ${nueva.classId}`);
+    } catch (e) {
+      console.error(e);
+      alert('Error al inscribirse: ' + e.response?.data?.message || e.message);
     }
   };
 
+  // Eliminar inscripción (solo local, no hay DELETE en el API)
   const handleDelete = () => {
-    const claseAEliminar = clases.find(c => c._id === idClase);
-    if (claseAEliminar) {
-      setClases(clases.filter(c => c._id !== idClase));
-      if (ultimaClase && ultimaClase._id === idClase) {
-        setUltimaClase(null);
-        setUserId('');
-        setUserEmail('');
-        alert('Clase y asistencia eliminadas.');
-      } else {
-        alert('Clase eliminada.');
-      }
-      setIdClase('');
-    } else {
-      alert('No estás inscrito en esta clase.');
+    setClases(clases.filter(c => c.classId !== idClase));
+    if (ultimaClase?.classId === idClase) {
+      setUltimaClase(null);
+      setUserId('');
+      setUserEmail('');
+    }
+    setIdClase('');
+  };
+
+  // Confirmar asistencia (Attendance)
+  const handleConfirmarAsistencia = async () => {
+    if (!ultimaClase) return;
+    try {
+      const payload = {
+        classId: ultimaClase.classId,
+        userId,
+        present: true
+      };
+      const resp = await api.post('/attendances', payload);
+      alert(`Asistencia registrada: ${resp.data.id}`);
+    } catch (e) {
+      console.error(e);
+      alert('Error al registrar asistencia');
     }
   };
 
-  const handleConfirmarAsistencia = () => {
-    const payload = {
-      classId: ultimaClase?._id,
-      userId,
-      userEmail
-    };
-    console.log("Datos enviados:", payload);
-    alert(`Asistencia confirmada a ${ultimaClase?.name}.`);
-  };
-
+  // Eliminar asistencia (solo local, no hay DELETE en el API)
   const handleEliminarAsistencia = () => {
-    alert(`Asistencia eliminada de ${ultimaClase?.name}.`);
+    alert(`Asistencia eliminada de ${ultimaClase.classId}`);
     setUserId('');
     setUserEmail('');
     setUltimaClase(null);
@@ -115,144 +90,89 @@ const RegisterClass = () => {
     <Box p={3} sx={{ width: '90%' }}>
       <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#910000' }}>
         Registro de Clases
-        <br /><br />
       </Typography>
 
-      <Grid>
-        <Grid item xs={12}>
+      <Grid container spacing={2} mt={2}>
+        {/* Ingresar datos de inscripción */}
+        <Grid item xs={12} md={6}>
           <Paper elevation={4} sx={estiloPaper}>
             <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#910000' }}>
-              Ingresar ID de Clase
+              Inscribirme a una Clase
             </Typography>
             <TextField
               label="ID de la Clase"
               value={idClase}
               onChange={e => setIdClase(e.target.value)}
-              fullWidth
-              sx={inputStyle}
+              fullWidth sx={inputStyle} margin="normal"
             />
-            <Grid container spacing={2} mt={2}>
-              <Grid item xs={6}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  sx={{ backgroundColor: '#910000' }}
-                  onClick={handleAdd}
-                >
-                  Registrar Clase
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button
-                  variant="outlined"
-                  fullWidth
-                  sx={{
-                    borderColor: '#910000',
-                    color: '#910000',
-                    '&:hover': {
-                      borderColor: '#910000',
-                      backgroundColor: '#fceaea'
-                    }
-                  }}
-                  onClick={handleDelete}
-                >
-                  Eliminar Clase
-                </Button>
-              </Grid>
-            </Grid>
+            <TextField
+              label="ID de Usuario"
+              value={userId}
+              onChange={e => setUserId(e.target.value)}
+              fullWidth sx={inputStyle} margin="normal"
+            />
+            <TextField
+              label="Correo de Usuario"
+              value={userEmail}
+              onChange={e => setUserEmail(e.target.value)}
+              fullWidth sx={inputStyle} margin="normal"
+            />
+            <Button variant="contained" fullWidth sx={{ backgroundColor: '#910000', mt: 2 }}
+              onClick={handleAdd}>
+              Inscribir Clase
+            </Button>
+            <Button variant="outlined" fullWidth sx={{ borderColor: '#910000', color: '#910000', mt: 1 }}
+              onClick={handleDelete}>
+              Eliminar Inscripción
+            </Button>
           </Paper>
         </Grid>
-        <br />
+
+        {/* Confirmar / Eliminar asistencia */}
+        {ultimaClase && (
+          <Grid item xs={12} md={6}>
+            <Paper elevation={4} sx={estiloPaper}>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#910000' }}>
+                Confirmar Asistencia ({ultimaClase.classId})
+              </Typography>
+              <Button variant="contained" fullWidth sx={{ backgroundColor: '#910000' }}
+                onClick={handleConfirmarAsistencia}>
+                Confirmar Asistencia
+              </Button>
+              <Button variant="outlined" fullWidth sx={{ borderColor: '#910000', color: '#910000', mt: 1 }}
+                onClick={handleEliminarAsistencia}>
+                Eliminar Asistencia
+              </Button>
+            </Paper>
+          </Grid>
+        )}
+
+        {/* Tabla de inscripciones locales */}
         <Grid item xs={12}>
           <Paper elevation={4} sx={estiloPaper}>
             <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#910000' }}>
-              Mis Clases
+              Mis Inscripciones
             </Typography>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell><b>ID</b></TableCell>
-                  <TableCell><b>Nombre</b></TableCell>
-                  <TableCell><b>Tipo</b></TableCell>
-                  <TableCell><b>Fecha</b></TableCell>
-                  <TableCell><b>Hora</b></TableCell>
-                  <TableCell><b>Capacidad</b></TableCell>
-                  <TableCell><b>Asistentes</b></TableCell>
-                  <TableCell><b>Recursos</b></TableCell>
-                  <TableCell><b>Ubicación</b></TableCell>
+                  <TableCell>Clase ID</TableCell>
+                  <TableCell>Usuario</TableCell>
+                  <TableCell>Email</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {clases.map((clase) => (
-                  <TableRow key={clase._id}>
-                    <TableCell>{clase._id}</TableCell>
-                    <TableCell>{clase.name}</TableCell>
-                    <TableCell>{clase.type}</TableCell>
-                    <TableCell>{clase.date}</TableCell>
-                    <TableCell>{clase.timeSlot}</TableCell>
-                    <TableCell>{clase.maxCapacity}</TableCell>
-                    <TableCell>{clase.currentAttendance}</TableCell>
-                    <TableCell>{clase.resources.join(', ')}</TableCell>
-                    <TableCell>{clase.location}</TableCell>
+                {clases.map((c) => (
+                  <TableRow key={`${c.classId}-${c.userId}`}>
+                    <TableCell>{c.classId}</TableCell>
+                    <TableCell>{c.userId}</TableCell>
+                    <TableCell>{c.userEmail}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </Paper>
         </Grid>
-        <br />
-        {ultimaClase && (
-          <Grid item xs={12}>
-            <Paper elevation={4} sx={estiloPaper}>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', color: '#910000' }}>
-                Confirmar Asistencia
-              </Typography>
-              <TextField
-                label="ID del Usuario"
-                value={userId}
-                onChange={e => setUserId(e.target.value)}
-                fullWidth
-                sx={{ ...inputStyle, mb: 2 }}
-              />
-              <TextField
-                label="Correo del Usuario"
-                value={userEmail}
-                onChange={e => setUserEmail(e.target.value)}
-                fullWidth
-                sx={{ ...inputStyle, mb: 2 }}
-              />
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    sx={{ backgroundColor: '#910000' }}
-                    onClick={handleConfirmarAsistencia}
-                  >
-                    Confirmar asistencia a {ultimaClase.name}
-                  </Button>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    sx={{
-                      borderColor: '#910000',
-                      color: '#910000',
-                      '&:hover': {
-                        borderColor: '#910000',
-                        backgroundColor: '#fceaea'
-                      }
-                    }}
-                    onClick={handleEliminarAsistencia}
-                  >
-                    Eliminar asistencia de {ultimaClase.name}
-                  </Button>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-        )}
       </Grid>
     </Box>
   );
