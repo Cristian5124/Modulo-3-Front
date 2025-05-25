@@ -57,7 +57,8 @@ const RegisterClass = () => {
     }
   };
 
-  // Eliminar inscripción (solo local)
+  /*
+  // Eliminar inscripción
   const handleDelete = () => {
     setClases(clases.filter(c => c.classId !== idClase));
     if (ultimaClase?.classId === idClase) {
@@ -67,7 +68,8 @@ const RegisterClass = () => {
     }
     setIdClase('');
   };
-
+  */
+ 
   // Confirmar asistencia
   const handleConfirmarAsistencia = async () => {
     if (!ultimaClase) return;
