@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Box, Toolbar } from '@mui/material';
-import Sidebar from './Sidebar';
-import Topbar from './Topbar';
-import Dashboard from './Dashboard';
-import RegisterClass from './RegisterClass';
+
+// Nuevas rutas basadas en el scaffolding
+import Sidebar from './components/Sidebar';
+import Topbar from './components/Topbar';
+import Dashboard from './pages/Dashboard';
+import RegisterClass from './pages/RegisterClass';
 
 function App() {
   return (
