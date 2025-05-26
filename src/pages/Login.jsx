@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/Styles/login.css';
 import BotonRegresar from '../components/BotonRegresar.jsx';
-import ApiService from '../service/api';
+import ApiService from '../service/api.js';
 
 export default function Login() {
   const [form, setForm] = useState({ usuario: '', contrasena: '' });
@@ -55,7 +55,7 @@ export default function Login() {
 
         {/* Imagen del logo institucional */}
         <img
-          src="/src/assets/resourses/LOGO.png"
+          src="/src/assets/resources/LogoEscuela.jpg"
           alt="Logo Institucional"
           style={{ width: 120, marginBottom: 16 }}
         />

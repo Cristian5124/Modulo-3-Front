@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   const Bienvenido = () => (
     <Box display="flex" alignItems="center" justifyContent="space-between" mb={4}>
-      <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#910000' }}>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'black' }}>
         Bienvenido {asistencias[0]?.userId || ''}
       </Typography>
       <IconButton sx={{
@@ -32,7 +32,7 @@ const Dashboard = () => {
     const fetchAsistencias = async () => {
       try {
         const response = await axios.get(
-          'https://registroclases-h0f5bjdgevhhcgh0.canadacentral-01.azurewebsites.net/reports/by-user/1'
+          'https://registroclases-h0f5bjdgevhhcgh0.canadacentral-01.azurewebsites.net/reports/by-user/Cristian'
         );
         setAsistencias(response.data);
       } catch (error) {
@@ -77,7 +77,7 @@ const Dashboard = () => {
               <TableBody>
                 {asistencias.map((asistencia, index) => (
                   <TableRow key={index}>
-                    <TableCell sx={cellStyle}>{asistencia.classId}</TableCell>
+                    <TableCell sx={cellStyle}>{asistencia.className || asistencia.name || asistencia.classId}</TableCell>
                     <TableCell sx={cellStyle}>{asistencia.userId}</TableCell>
                     <TableCell sx={cellStyle}>{asistencia.present ? 'Sí' : 'No'}</TableCell>
                     <TableCell sx={cellStyle}>
@@ -103,8 +103,8 @@ const Dashboard = () => {
                   expandIcon={<ExpandMoreIcon sx={{ color: 'white' }} />}
                   sx={{ backgroundColor: '#910000', color: 'white', borderRadius: 2 }}
                 >
-                  <Typography sx={{color: 'white' }}>
-                    <b>Clase:</b> {asistencia.classId}
+                  <Typography sx={{ color: 'white' }}>
+                    <b>Clase:</b> {asistencia.className || asistencia.name || asistencia.classId}
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>

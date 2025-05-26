@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import LOGOESCUELA from '../assets/resourses/LogoEscuela.jpg';
+import LOGOESCUELA from '../assets/resources/LogoEscuela.jpg';
 import '../assets/Styles/navbar.css';
 
 export default function Navbar() {
