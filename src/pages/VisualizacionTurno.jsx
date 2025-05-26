@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../assets/Styles/VisualizacionTurno.css'; // Corregida la ruta
+import '../assets/Styles/VisualizacionTurno.css';
 import BotonRegresar from '../components/BotonRegresar';
 
 const usuarioMock = {

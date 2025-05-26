@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../assets/Styles/login.css';
 import BotonRegresar from '../components/BotonRegresar.jsx';
-import ApiService from '../service/api.js';
+import ApiService from '../service/api';
 
 export default function Login() {
   const [form, setForm] = useState({ usuario: '', contrasena: '' });
