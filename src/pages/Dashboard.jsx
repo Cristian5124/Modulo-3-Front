@@ -32,7 +32,7 @@ const Dashboard = () => {
     const fetchAsistencias = async () => {
       try {
         const response = await axios.get(
-          'https://registroclases-h0f5bjdgevhhcgh0.canadacentral-01.azurewebsites.net/reports/by-user/Cristian'
+          'https://registroclases-h0f5bjdgevhhcgh0.canadacentral-01.azurewebsites.net/reports/by-user/Pepito'
         );
         setAsistencias(response.data);
       } catch (error) {
