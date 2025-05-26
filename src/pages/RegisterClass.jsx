@@ -15,6 +15,7 @@ const RegisterClass = () => {
   const [ultimaClase, setUltimaClase] = useState(null);
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
 
   const inputStyle = {
     '& label.Mui-focused': { color: '#910000' },
@@ -39,37 +40,24 @@ const RegisterClass = () => {
 
   // Inscribirme a la clase (Enrollment)
   const handleAdd = async () => {
-    if (!idClase || !userId || !userEmail) {
-      return alert('Debes ingresar ID de clase, usuario y correo');
+    if (!idClase || !userId || !userEmail || !userName) {
+      return alert('Debes ingresar el nombre de la clase, usuario, nombre y correo');
     }
     try {
       const resp = await api.post('/enrollments', null, {
-        params: { classId: idClase, userId, userEmail }
+        params: { className: idClase, userId, userEmail, userName }
       });
       const nueva = resp.data;
       setUltimaClase(nueva);
       setIdClase('');
       alert(`Inscripción exitosa a la clase ${nueva.classId}`);
-      fetchInscripciones(); // actualizar tabla
+      fetchInscripciones();
     } catch (e) {
       console.error(e);
       alert('Error al inscribirse: ' + (e.response?.data?.message || e.message));
     }
   };
 
-  /*
-  // Eliminar inscripción
-  const handleDelete = () => {
-    setClases(clases.filter(c => c.classId !== idClase));
-    if (ultimaClase?.classId === idClase) {
-      setUltimaClase(null);
-      setUserId('');
-      setUserEmail('');
-    }
-    setIdClase('');
-  };
-  */
- 
   // Confirmar asistencia
   const handleConfirmarAsistencia = async () => {
     if (!ultimaClase) return;
@@ -91,6 +79,7 @@ const RegisterClass = () => {
     alert(`Asistencia eliminada de ${ultimaClase.classId}`);
     setUserId('');
     setUserEmail('');
+    setUserName('');
     setUltimaClase(null);
   };
 
@@ -110,7 +99,7 @@ const RegisterClass = () => {
               Inscribirme a una Clase
             </Typography>
             <TextField
-              label="ID de la Clase"
+              label="Nombre de la Clase"
               value={idClase}
               onChange={e => setIdClase(e.target.value)}
               fullWidth sx={inputStyle} margin="normal"
@@ -119,6 +108,12 @@ const RegisterClass = () => {
               label="ID de Usuario"
               value={userId}
               onChange={e => setUserId(e.target.value)}
+              fullWidth sx={inputStyle} margin="normal"
+            />
+            <TextField
+              label="Nombre de Usuario"
+              value={userName}
+              onChange={e => setUserName(e.target.value)}
               fullWidth sx={inputStyle} margin="normal"
             />
             <TextField
@@ -162,16 +157,18 @@ const RegisterClass = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Clase ID</TableCell>
+                  <TableCell>Nombre de la Clase</TableCell>
                   <TableCell>Usuario</TableCell>
+                  <TableCell>Nombre</TableCell>
                   <TableCell>Email</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {clases.map((c) => (
-                  <TableRow key={`${c.classId}-${c.userId}`}>
+                  <TableRow key={`${c.className}-${c.userId}`}>
                     <TableCell>{c.classId}</TableCell>
                     <TableCell>{c.userId}</TableCell>
+                    <TableCell>{c.userName}</TableCell>
                     <TableCell>{c.userEmail}</TableCell>
                   </TableRow>
                 ))}
