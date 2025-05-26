@@ -9,17 +9,10 @@ import Dashboard from '../pages/Dashboard';
 import RegisterClass from '../pages/RegisterClass';
 import CreateClass from '../pages/CreateClass';
 
-import Login from '../pages/Login';
-import User from '../pages/User';
-
 const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        {/* Rutas públicas (sin sidebar ni navbar) */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/user" element={<User />} />
-
         {/* Rutas internas con layout */}
         <Route
           path="*"
