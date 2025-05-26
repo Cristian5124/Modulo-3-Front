@@ -1,70 +1,77 @@
-# Getting Started with Create React App
+# Módulo de Asistencia a Clases Extracurriculares 🎓
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este proyecto es una aplicación frontend construida con **React** y **Material UI** que permite a los estudiantes y funcionarios de la universidad registrar, consultar y gestionar la asistencia a clases extracurriculares ofrecidas por Bienestar Universitario.
 
-## Available Scripts
+## 🚀 Tecnologías Utilizadas
 
-In the project directory, you can run:
+- ⚛️ React (CRA)
+- 💄 Material UI (MUI)
+- 🌐 React Router DOM
+- ☁️ Azure Static Web Apps (despliegue)
+- 📦 GitHub Actions (CI/CD)
 
-### `npm start`
+## 📁 Estructura del Proyecto
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+src/
+├── assets/
+│   ├── images/
+│   ├── resources/
+│   └── Styles/
+├── components/         # Componentes reutilizables: Navbar, Sidebar, Topbar, etc.
+├── pages/              # Vistas principales como Dashboard, RegisterClass, etc.
+├── routes/             # Rutas centralizadas en AppRoutes.jsx
+├── service/            # Archivos de conexión a APIs
+├── styles/             # Archivos de estilo CSS globales
+├── App.js              # Entrada principal de la app
+├── index.js            # Punto de montaje de ReactDOM
+└── setupTests.js       # Configuración para pruebas
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📌 Funcionalidades
 
-### `npm test`
+- ✅ Visualización del **horario de clases** confirmado
+- ✅ Consulta de clases y su estado de asistencia
+- ✅ Registro de clases disponibles por ID
+- ✅ Confirmación de asistencia con datos del usuario
+- ✅ Navegación fluida entre secciones con React Router
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📦 Instalación local
 
-### `npm run build`
+```bash
+# Clona el repositorio
+git clone https://github.com/Cristian5124/Modulo-3-Front.git
+cd Modulo-3-Front
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Instala las dependencias
+npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Ejecuta en modo desarrollo
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Accede en: [http://localhost:3000](http://localhost:3000)
 
-### `npm run eject`
+## ☁️ Despliegue en Azure
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+El proyecto está configurado para desplegarse automáticamente en **Azure Static Web Apps** usando GitHub Actions.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Output: `/build`
+- App Location: `/`
+- API Location: *(vacío, no se usa Functions)*
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🔧 Variables de entorno
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+No se requieren por ahora. Las clases y asistencias se manejan localmente (modo demo).
 
-## Learn More
+## 👨‍💻 Autores
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**Cristian David Polo Garrido** <br>
+**Daniel Ricardo Ruge Gomez** <br>
+**Juan Sebastián Velandia Pedraza** <br>
+**David Santiago Villadiego Médicis** <br>
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Estudiantes de Ingeniería de Sistemas
+Escuela Colombiana de Ingeniería Julio Garavito
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
